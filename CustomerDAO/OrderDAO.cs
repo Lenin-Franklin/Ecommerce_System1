@@ -78,5 +78,105 @@ namespace ProductOrder.DAL
             }
         }
 
+        public void TableCheck()
+        {
+            try
+            {
+                Qry = "Select * from Product";
+                da = new SqlDataAdapter(Qry, con);
+                dt = new DataTable("Product");
+                da.Fill(dt);
+                foreach (DataRow q in dt.Rows)
+                {
+                    foreach (var item in q.ItemArray)
+                        Console.WriteLine(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void ConfirmOrder(int OrderId, bool paymentStatus)
+        {
+            try
+            {
+                if (paymentStatus == true)
+                {
+                    Console.WriteLine("\nORDER CONFIRMED");
+                    TrackShipping(OrderId);
+
+                }
+                else
+                {
+                    Console.WriteLine("\nPAYMENT INCOMPLETE");
+                }
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        public void TrackOrder(int OrderId)
+        {
+            try
+            {
+                Qry = "SELECT ORDERSTATUS FROM ORDERDETAILS WHERE ORDERID=" + OrderId.ToString();
+                con.Open();
+                cmd = new SqlCommand(Qry, con);
+                drr = cmd.ExecuteReader();
+                con.Close();
+                while (drr.HasRows)
+                {
+                    drr.Read();
+                    Console.WriteLine("Order Id:{0} \t OrderStatus Status:{1}", drr["OrderId"], drr["OderStatus"]);
+                }
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        public void TrackShipping(int OrderId)
+        {
+            try
+            {
+
+                Qry = "SELECT * FROM SHIPPINGDETAILS WHERE ORDERID=" + OrderId.ToString();
+                con.Open();
+                cmd = new SqlCommand(Qry, con);
+                drr = cmd.ExecuteReader();
+                while (drr.HasRows)
+                {
+                    drr.Read();
+                    Console.WriteLine("Order Id:{0} \t Shipping Status:{1}", drr["OrderId"], drr["ShippingStatus"]);
+                }
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
     }
 }
